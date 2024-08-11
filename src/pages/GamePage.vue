@@ -1,6 +1,6 @@
 <template>
     <div class="action-button-container">
-        <div class="action-button">
+        <div class="action-button" :onclick="handleClickTrophy">
             <v-icon name="bi-trophy-fill" class="icon" />
         </div>
     </div>
@@ -28,6 +28,10 @@ onMounted(() => {
     }
 })
 
+function handleClickTrophy(e: PointerEvent) {
+    console.log(e)
+}
+
 function handleClickPlay() {
     console.log("PLAY")
     showGameOverPopup.value = false;
@@ -52,7 +56,7 @@ game.start()
     right: 0px;
     margin: 0.5em;
     padding: 0.25em;
-    z-index: 1;
+    z-index: 100;
     display: flex;
     justify-content: center;
 }

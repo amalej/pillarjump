@@ -105,18 +105,21 @@ export default class Game {
     const game = this;
     window.onkeydown = function (event) {
       if (event.key === " ") {
-        event.preventDefault();
         game.lastPillarPlayerWasOn = null;
         game.playerHasMoved = true;
         game.player.switchCircle();
       }
     };
 
-    window.ontouchstart = function (event) {
-      game.lastPillarPlayerWasOn = null;
-      game.playerHasMoved = true;
-      game.player.switchCircle();
-    };
+    this.renderer.domElement.addEventListener(
+      "touchstart",
+      function (event) {
+        game.lastPillarPlayerWasOn = null;
+        game.playerHasMoved = true;
+        game.player.switchCircle();
+      },
+      { passive: true }
+    );
   }
 
   private addBasePlane() {
