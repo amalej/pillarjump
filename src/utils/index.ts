@@ -1,5 +1,5 @@
 export function generateId() {
-  const baseLength = 16;
+  const baseLength = 10;
   let result = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -12,6 +12,6 @@ export function generateId() {
 
   const date = new Date();
   const timestamp = date.getTime();
-  result += timestamp.toString(16);
+  result += timestamp.toString(32);
   return result;
 }

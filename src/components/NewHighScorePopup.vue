@@ -46,7 +46,7 @@ function submit() {
             sid: scoreId,
         }
 
-        console.log(userScore)
+        Score.database.add(userScore);
         Score.localStorage.add(userScore)
         emit('submitScore', userScore)
     }

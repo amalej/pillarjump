@@ -7,7 +7,6 @@
 </template>
 
 <script setup lang="ts">
-console.log("render game")
 import GameActionButtons from '@/components/GameActionButtons.vue';
 import GameOverPopup from '@/components/GameOverPopup.vue';
 import GameScore from '@/components/GameScore.vue';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Score, { type UserScore } from '@/database/score';
+import Score, { MAX_GLOBAL_HIGHSCORE_COUNT, type UserScore } from '@/database/score';
 import { generateId } from '@/utils';
 import { onMounted, ref } from 'vue';
 
@@ -36,6 +36,7 @@ onMounted(() => {
             <div class="high-score-info">
                 <div class="user-name"> {{ name }}</div>
                 <div class="user-score">
+                    <v-icon v-if="index + 1 <= MAX_GLOBAL_HIGHSCORE_COUNT" name="la-globe-solid" class="trophy-icon" />
                     <v-icon name="bi-trophy-fill" class="trophy-icon" />
                     <div class="score-text"> {{ score }}</div>
                 </div>

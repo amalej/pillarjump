@@ -3,7 +3,14 @@
         <div class="card">
             <div class="card-header">High Scores</div>
             <div class="card-body">
-                <PersonalHighScores />
+                <div class="score-tab-selector">
+                    <div class="score-tab" :onclick="() => scoreTab = 'global'"
+                        :class="{ 'active-score-tab': scoreTab === 'global' }">Global</div>
+                    <div class="score-tab" :onclick="() => scoreTab = 'personal'"
+                        :class="{ 'active-score-tab': scoreTab === 'personal' }">Personal</div>
+                </div>
+                <PersonalHighScores v-if="scoreTab === 'personal'" />
+                <GlobalHighScores v-else-if="scoreTab === 'global'" />
             </div>
             <div class="card-footer">
                 <div class="card-button" :onclick="async () => await router.push({ path: '/' })">
@@ -19,6 +26,10 @@
 import { useRouter } from 'vue-router'
 import PersonalHighScores from '@/components/PersonalHighScores.vue';
 import { logEvent } from '@/firebase/analytics';
+import GlobalHighScores from '@/components/GlobalHighScores.vue';
+import { ref } from 'vue';
+
+const scoreTab = ref<'personal' | 'global'>('personal')
 
 logEvent("render_high_score_page")
 const router = useRouter()
@@ -98,5 +109,30 @@ const router = useRouter()
     margin: 0em 0.25em;
     display: flex;
     align-items: center;
+}
+
+.score-tab-selector {
+    margin: 0.5em;
+    display: flex;
+    flex-direction: row;
+    width: calc(100% - 1em);
+}
+
+.score-tab {
+    color: white;
+    text-transform: uppercase;
+    width: auto;
+    width: 100%;
+    margin: 0px 0.1em;
+    display: flex;
+    padding: 0.5em;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid white;
+}
+
+.active-score-tab {
+    border: 3.5px solid var(--game-pink-color-light);
+    padding: calc(0.5em - 2.5px);
 }
 </style>
