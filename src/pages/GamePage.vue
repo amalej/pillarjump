@@ -1,25 +1,36 @@
 <template>
-    <div class="action-button-container">
-        <div class="action-button" :onclick="handleClickTrophy">
-            <v-icon name="bi-trophy-fill" class="icon" />
-        </div>
-    </div>
     <div ref="gameComponent">
         <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
+        <GameActionButtons @click-trophy-button="handleClickTrophy" />
     </div>
 </template>
 
 <script setup lang="ts">
+console.log("render game")
+import GameActionButtons from '@/components/GameActionButtons.vue';
 import GameOverPopup from '@/components/GameOverPopup.vue';
 import GameScore from '@/components/GameScore.vue';
 import Game from '@/game';
-import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue';
 
+const router = useRouter()
+const route = useRoute();
 const score = ref(0)
 const showGameOverPopup = ref(false)
 const gameComponent = ref<HTMLElement | null>(null);
 const game = new Game();
+
+watch(() => route.fullPath,
+    async () => {
+        if (route.fullPath === "/") {
+            game.resume()
+        } else {
+            game.pause()
+        }
+    }
+);
 
 onMounted(() => {
     const gameComponentElement: HTMLElement | null = gameComponent.value;
@@ -28,8 +39,9 @@ onMounted(() => {
     }
 })
 
-function handleClickTrophy(e: PointerEvent) {
-    console.log(e)
+async function handleClickTrophy() {
+    await router.push({ path: '/highscores' })
+    game.pause()
 }
 
 function handleClickPlay() {
@@ -50,26 +62,4 @@ game.onGameOver = async (_score) => {
 game.start()
 </script>
 
-<style scoped>
-.action-button-container {
-    position: absolute;
-    right: 0px;
-    margin: 0.5em;
-    padding: 0.25em;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-}
-
-.action-button {
-    border: 2px solid white;
-    border-radius: 0.5em;
-    padding: 0.5em;
-}
-
-.action-button>.icon {
-    width: 1.25em;
-    height: 1.25em;
-    color: white;
-}
-</style>
+<style scoped></style>

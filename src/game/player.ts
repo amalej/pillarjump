@@ -74,9 +74,13 @@ export default class Player {
     this.revolvingCircle = new PlayerRevolvingCircle({
       scene: this.scene,
       position: {
-        x: this.mesh.position.x,
+        x:
+          this.mesh.position.x +
+          Math.cos(this.rotationAngle) * this.circleDistance,
         y: this.mesh.position.y + this.height / 2,
-        z: this.mesh.position.z - this.radius * 2,
+        z:
+          this.mesh.position.z +
+          Math.sin(this.rotationAngle) * this.circleDistance,
       },
       height: this.height,
       radius: this.radius,

@@ -88,7 +88,7 @@ onMounted(() => {
 }
 
 .sid-match {
-    border: 3.5px solid rgb(189, 104, 104);
+    border: 3.5px solid var(--game-pink-color-light);
     padding: calc(0.5em - 2.5px);
 }
 </style>
@@ -101,7 +101,7 @@ onMounted(() => {
 }
 
 .styled-scrollbar::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
     background-color: transparent;
 }
 

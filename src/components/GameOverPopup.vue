@@ -62,14 +62,14 @@ function playAgain() {
 }
 
 .card {
-    width: clamp(300px, 40%, 40%);
+    width: clamp(300px, 40%, 512px);
     max-height: 75%;
     background-color: rgba(0, 0, 0, 0.4);
     position: relative;
     display: flex;
     overflow: hidden;
     border-radius: 8px;
-    border: 0.1em solid rgb(112, 85, 90);
+    border: 0.1em solid var(--game-pink-color-dark);
     padding: 0.75em;
     flex-direction: column;
 }
@@ -111,6 +111,8 @@ function playAgain() {
     display: flex;
     width: 100%;
     justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
 }
 
 .play-again-icon {

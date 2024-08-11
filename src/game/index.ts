@@ -105,18 +105,22 @@ export default class Game {
     const game = this;
     window.onkeydown = function (event) {
       if (event.key === " ") {
-        game.lastPillarPlayerWasOn = null;
-        game.playerHasMoved = true;
-        game.player.switchCircle();
+        if (game.isGameRunning) {
+          game.lastPillarPlayerWasOn = null;
+          game.playerHasMoved = true;
+          game.player.switchCircle();
+        }
       }
     };
 
     this.renderer.domElement.addEventListener(
       "touchstart",
       function (event) {
-        game.lastPillarPlayerWasOn = null;
-        game.playerHasMoved = true;
-        game.player.switchCircle();
+        if (game.isGameRunning) {
+          game.lastPillarPlayerWasOn = null;
+          game.playerHasMoved = true;
+          game.player.switchCircle();
+        }
       },
       { passive: true }
     );
@@ -311,7 +315,6 @@ export default class Game {
     this.passedPillars = [];
     this.playerHasMoved = false;
     this.playerNotOnPlatformCheckBufferCounter = 0;
-    // this.gameSpeed = 1;
     this.player.reset();
   }
 
@@ -334,5 +337,13 @@ export default class Game {
     for (let pillar of this.passedPillars) {
       pillar.gameSpeed = this.gameSpeed;
     }
+  }
+
+  pause() {
+    this.isGameRunning = false;
+  }
+
+  resume() {
+    this.isGameRunning = true;
   }
 }

@@ -16,6 +16,7 @@ console.log(scores)
 <template>
   <main>
     <GamePage />
+    <RouterView />
   </main>
 </template>
 
