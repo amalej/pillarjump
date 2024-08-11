@@ -136,23 +136,9 @@ export default class Player {
       this.revolvingCircle.mesh.position.z =
         this.mesh.position.z +
         Math.sin(this.rotationAngle) * this.circleDistance;
-      // this.mesh.position.y -= this.gameSpeed * deltaTime * 0.5;
       if (this.pillar !== null) {
         this.mesh.rotation.z = Math.PI / 2;
         this.mesh.rotation.y = 0.4;
-        // const xDelta = this.mesh.position.x - this.pillar.mesh.position.x;
-        // const zDelta = this.mesh.position.z - this.pillar.mesh.position.z;
-        // const xAngleRatio =
-        //   (Math.PI * 0.5 * xDelta) / (Math.abs(xDelta) + Math.abs(zDelta));
-        // const zAngleRatio =
-        //   (Math.PI * 0.5 * zDelta) / (Math.abs(xDelta) + Math.abs(zDelta));
-        // if (Math.abs(this.mesh.rotation.z) < Math.abs(xAngleRatio)) {
-        //   this.mesh.rotation.z -= xAngleRatio / 10;
-        // }
-
-        // if (Math.abs(this.mesh.rotation.x) < Math.abs(zAngleRatio)) {
-        //   this.mesh.rotation.x += zAngleRatio / 10;
-        // }
       }
     }
   }
@@ -198,12 +184,12 @@ class PlayerRevolvingCircle {
       this.height
     );
     const _materials = [
-      // new MeshStandardMaterial({ color: 0x1a78c2 }),
-      // new MeshStandardMaterial({ color: 0x2196ff }),
-      // new MeshStandardMaterial({ color: 0x1a78c2 }),
-      new MeshStandardMaterial({ color: 0x00ffff }),
-      new MeshStandardMaterial({ color: 0x00ffff }),
-      new MeshStandardMaterial({ color: 0x00ffff }),
+      new MeshStandardMaterial({ color: 0x1a78c2 }),
+      new MeshStandardMaterial({ color: 0x2196ff }),
+      new MeshStandardMaterial({ color: 0x1a78c2 }),
+      // new MeshStandardMaterial({ color: 0x00ffff }),
+      // new MeshStandardMaterial({ color: 0x00ffff }),
+      // new MeshStandardMaterial({ color: 0x00ffff }),
     ];
 
     this.mesh = new Mesh(_geometry, _materials);
