@@ -26,6 +26,10 @@ coverage
 
 # Firebase
 .firebase
+emulator-data
 
 # Build
 dist
+
+# ENV
+.env
