@@ -324,7 +324,6 @@ export default class Game {
       this.gameSpeed = MAX_GAME_SPEED;
     }
 
-    console.log(this.gameSpeed);
     this.player.gameSpeed = this.gameSpeed;
     for (let pillar of this.pillars) {
       pillar.gameSpeed = this.gameSpeed;

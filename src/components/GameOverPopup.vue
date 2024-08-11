@@ -1,32 +1,45 @@
 <script setup lang="ts">
-import { onMounted, ref, defineEmits } from 'vue';
-const emit = defineEmits(['clickPlay']);
+import Score, { type UserScore } from '@/database/score';
+import NewHighScorePopup from './NewHighScorePopup.vue';
+import PersonalHighScores from './PersonalHighScores.vue';
+import { ref } from 'vue';
 
-const playAgainButtonRef = ref<HTMLDivElement | null>(null);
+const props = defineProps<{
+    score: number;
+}>()
+const emit = defineEmits(['clickPlay'])
+const userScore = ref<UserScore | undefined>(undefined)
+const isHighScore = Score.localStorage.isHighScore(props.score)
+const showNewHighScorePopup = ref(isHighScore)
 
-onMounted(() => {
-    if (playAgainButtonRef !== null) {
-        const playAgainButtonElement = playAgainButtonRef.value as HTMLDivElement;
-        playAgainButtonElement.onclick = () => {
-            emit('clickPlay')
-        };
+function closeNewHighScorePopup() {
+    showNewHighScorePopup.value = false
+}
 
-    }
-})
+function submitNewHighScore(_userScore: UserScore) {
+    userScore.value = _userScore;
+    showNewHighScorePopup.value = false
+}
+
+function playAgain() {
+    emit('clickPlay')
+}
 
 </script>
 
 <template>
-    <div id="main">
+    <NewHighScorePopup v-if="showNewHighScorePopup" :score="props.score" @close-popup="closeNewHighScorePopup"
+        @submit-score="submitNewHighScore" />
+    <div id="main" v-else>
         <div class="card">
-            <div class="card-content">
-                <div class="card-header">Game Over</div>
-                <div style="margin-bottom: 0.5em;"></div>
-                <!-- <div class="card-body"> -->
-                <!-- </div> -->
-                <div class="card-footer">
-                    <div class="card-button">Trophy</div>
-                    <div class="card-button" ref="playAgainButtonRef">Play</div>
+            <div class="card-header">Game Over</div>
+            <div class="card-body">
+                <PersonalHighScores :user-score="userScore" />
+            </div>
+            <div class="card-footer">
+                <div class="card-button" :onclick="playAgain">
+                    <v-icon name="fa-play" class="play-again-icon"></v-icon>
+                    <div class="play-again-text">Play Again</div>
                 </div>
             </div>
         </div>
@@ -35,6 +48,7 @@ onMounted(() => {
 
 <style scoped>
 #main {
+    font-family: Arial, Helvetica, sans-serif;
     top: 0px;
     left: 0px;
     height: 100%;
@@ -49,19 +63,14 @@ onMounted(() => {
 
 .card {
     width: clamp(300px, 40%, 40%);
-    /* height: 40%; */
+    max-height: 75%;
     background-color: rgba(0, 0, 0, 0.4);
     position: relative;
     display: flex;
     overflow: hidden;
     border-radius: 8px;
     border: 0.1em solid rgb(112, 85, 90);
-}
-
-.card-content {
     padding: 0.75em;
-    width: 100%;
-    display: flex;
     flex-direction: column;
 }
 
@@ -79,9 +88,12 @@ onMounted(() => {
 }
 
 .card-body {
-    background: green;
-    height: 100%;
+    margin: 0.25em 0em;
+    max-height: 100%;
+    overflow: hidden;
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .card-footer {
@@ -101,24 +113,17 @@ onMounted(() => {
     justify-content: center;
 }
 
-
-/* .card::before {
-    content: '';
-    position: absolute;
-    width: 100px;
-    background-image: linear-gradient(180deg, rgb(170, 119, 119), rgb(170, 119, 119));
-    height: 130%;
-    animation: rotBGimg 3s linear infinite;
-    transition: all 0.2s linear;
+.play-again-icon {
+    margin: 0em 0.25em;
+    display: flex;
+    align-items: center;
 }
 
-@keyframes rotBGimg {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-} */
+.play-again-text {
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 600;
+}
 </style>

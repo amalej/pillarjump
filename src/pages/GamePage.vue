@@ -1,6 +1,11 @@
 <template>
+    <div class="action-button-container">
+        <div class="action-button">
+            <v-icon name="bi-trophy-fill" class="icon" />
+        </div>
+    </div>
     <div ref="gameComponent">
-        <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" />
+        <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
     </div>
 </template>
@@ -42,7 +47,25 @@ game.start()
 </script>
 
 <style scoped>
-div {
-    color: green;
+.action-button-container {
+    position: absolute;
+    right: 0px;
+    margin: 0.5em;
+    padding: 0.25em;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.action-button {
+    border: 2px solid white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+}
+
+.action-button>.icon {
+    width: 1.25em;
+    height: 1.25em;
+    color: white;
 }
 </style>
