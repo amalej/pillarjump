@@ -18,6 +18,9 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import PersonalHighScores from '@/components/PersonalHighScores.vue';
+import { logEvent } from '@/firebase/analytics';
+
+logEvent("render_high_score_page")
 const router = useRouter()
 </script>
 

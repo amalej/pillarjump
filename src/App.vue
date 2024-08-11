@@ -1,16 +1,8 @@
 <script setup lang="ts">
+import { logEvent } from './firebase/analytics';
 import GamePage from './pages/GamePage.vue';
-import Score from './database/score';
 
-// Score.localStorage.reset()
-// Score.localStorage.add({
-//   uid: 'test',
-//   name: "asf2",
-//   score: 1
-// })
-const scores = Score.localStorage.get();
-console.log(scores)
-
+logEvent("render_app")
 </script>
 
 <template>

@@ -14,7 +14,9 @@ import GameScore from '@/components/GameScore.vue';
 import Game from '@/game';
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue';
+import { logEvent } from '@/firebase/analytics';
 
+logEvent("render_game_page")
 const router = useRouter()
 const route = useRoute();
 const score = ref(0)
@@ -45,7 +47,7 @@ async function handleClickTrophy() {
 }
 
 function handleClickPlay() {
-    console.log("PLAY")
+    logEvent("play_game")
     showGameOverPopup.value = false;
     game.start()
 }
@@ -55,7 +57,9 @@ game.onScoreChange = (_score) => {
 }
 
 game.onGameOver = async (_score) => {
-    console.log("Final Score: " + _score)
+    logEvent("game_over", {
+        score: _score
+    })
     showGameOverPopup.value = true;
 }
 
