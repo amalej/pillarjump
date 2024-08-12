@@ -11,18 +11,33 @@ Made with Firebase + Vue 3
 </div>
 <br>
 
+## Clone and develop
+
+1. Run `git clone`
+2. Install dependencies
+
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+3. Run the hot-reloader for development
+
+- The command below runs the Firebase Emulators and the Vite hot-reloader
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Build and deploy
+
+1. Run command below to build
 
 ```sh
 npm run build
+```
+
+2. Run command below to deploy
+
+```sh
+firebase deploy --project PROJECT_ID
 ```
