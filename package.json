@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others \"firebase emulators:start --only firestore\" \"vite --host\"",
+    "dev:app": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
