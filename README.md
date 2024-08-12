@@ -4,16 +4,15 @@ Play the game: https://pillarjump.web.app/
 
 Made with Firebase + Vue 3
 
-<div style="display:flex; flex-direction:row; align-items:center;">
+<span style="text-align: center;">
     <img src="./images/firebase-logo.png" alt="drawing" width="128"/>
-    <div style="font-size: 3em">+</div>
     <img src="./images/vue-icon.png" alt="drawing" width="128"/>
-</div>
+</span>
 <br>
 
 ## Clone and develop
 
-1. Run `git clone`
+1. Run `git clone https://github.com/amalej/pillarjump.git`
 2. Install dependencies
 
 ```sh
