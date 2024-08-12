@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import Score, { MAX_GLOBAL_HIGHSCORE_COUNT, type UserScore } from '@/database/score';
+import { logEvent } from '@/firebase/analytics';
 import { generateId } from '@/utils';
 import { onMounted, ref } from 'vue';
 
+logEvent("render_personal_high_scores")
 const props = defineProps<{
     userScore?: UserScore
 }>()
 
 const scores = ref(Score.localStorage.get());
-
 
 onMounted(() => {
     const highScoreDiv = document.getElementsByClassName('sid-match')[0]

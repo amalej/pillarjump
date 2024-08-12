@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import Score, { MAX_DATABASE_RENDER_COUNT, type UserScore } from '@/database/score';
 import User from '@/database/user';
+import { logEvent } from '@/firebase/analytics';
 import { generateId } from '@/utils';
+import { trace } from '@/firebase/performance';
 import { onMounted, ref, watch } from 'vue';
 
+logEvent("render_global_high_scores")
 const props = defineProps<{
     userScore?: UserScore
 }>()
@@ -24,11 +27,17 @@ onMounted(async () => {
         }, 100)
     }
 
+    const getTopScoresTrace = trace('getTopScores')
+    getTopScoresTrace.start()
     scores.value = await Score.database.getTopScores()
+    getTopScoresTrace.stop()
 
     if (highestScore) {
+        const getGlobalPositionTrace = trace('getGlobalPosition')
+        getGlobalPositionTrace.start()
         const pos = await Score.database.getGlobalPosition(highestScore)
         highestScoreGlobalPosition.value = pos
+        getGlobalPositionTrace.stop()
     }
 })
 
