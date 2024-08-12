@@ -2,7 +2,9 @@
 
 Play the game: https://pillarjump.web.app/
 
-Made with Firebase + Vue 3
+<img src="./images/game-screenshot-00.png" alt="drawing" height="512"/>
+
+## Made with Firebase + Vue 3
 
 <span style="text-align: center;">
     <img src="./images/firebase-logo.png" alt="drawing" width="128"/>
