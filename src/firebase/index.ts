@@ -19,3 +19,5 @@ export const firebasePerformance = getPerformance(app);
 export const firestoreDb = getFirestore(app);
 
 // connectFirestoreEmulator(firestoreDb, "127.0.0.1", 8080);
+// firebasePerformance.dataCollectionEnabled = false;
+// firebasePerformance.instrumentationEnabled = false;
