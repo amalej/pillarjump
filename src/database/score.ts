@@ -22,7 +22,8 @@ export interface UserScore {
 
 const MAX_LOCAL_HIGHSCORE_COUNT = 5;
 export const MAX_GLOBAL_HIGHSCORE_COUNT = 3;
-export const MAX_DATABASE_RENDER_COUNT = 10;
+export const MAX_DATABASE_TOP_SCORE_COUNT = 10;
+export const MAX_DATABASE_HIGHER_SCORE_COUNT = 5;
 
 export default class Score {
   static localStorage = {
@@ -66,12 +67,31 @@ export default class Score {
   };
 
   static database = {
+    getClosestHigherScores: async (userScore: UserScore) => {
+      const collectionRef = collection(firestoreDb, "scores");
+      const higherScoresQuery = query(
+        collectionRef,
+        where("score", ">", userScore.score),
+        orderBy("score", "asc"),
+        limit(MAX_DATABASE_HIGHER_SCORE_COUNT)
+      );
+
+      const higherScoresSnapshot = await getDocs(higherScoresQuery);
+      let scores: UserScore[] = [];
+      for (let score of higherScoresSnapshot.docs) {
+        const userScore = score.data() as UserScore;
+        scores.push(userScore);
+      }
+
+      if (scores.length > 0) scores = scores.sort((a, b) => b.score - a.score);
+      return scores;
+    },
     getTopScores: async (): Promise<UserScore[]> => {
       const collectionRef = collection(firestoreDb, "scores");
       const highestScoreQuery = query(
         collectionRef,
         orderBy("score", "desc"),
-        limit(MAX_DATABASE_RENDER_COUNT)
+        limit(MAX_DATABASE_TOP_SCORE_COUNT)
       );
 
       const highestScoreSnapshot = await getDocs(highestScoreQuery);

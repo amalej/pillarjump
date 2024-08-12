@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Score, { MAX_DATABASE_RENDER_COUNT, type UserScore } from '@/database/score';
+import Score, { MAX_DATABASE_HIGHER_SCORE_COUNT, MAX_DATABASE_TOP_SCORE_COUNT, type UserScore } from '@/database/score';
 import User from '@/database/user';
 import { logEvent } from '@/firebase/analytics';
 import { generateId } from '@/utils';
@@ -11,9 +11,11 @@ const props = defineProps<{
     userScore?: UserScore
 }>()
 
-const scores = ref<UserScore[]>([])
+const topScores = ref<UserScore[]>([])
+const higherScores = ref<UserScore[]>([])
 const highestScore: UserScore | undefined = Score.localStorage.get()[0]
 const highestScoreGlobalPosition = ref<number | null>(null)
+const MAX_RENDER_COUNT = MAX_DATABASE_TOP_SCORE_COUNT + MAX_DATABASE_HIGHER_SCORE_COUNT
 
 onMounted(async () => {
     const highScoreDiv = document.getElementsByClassName('sid-match')[0]
@@ -29,16 +31,30 @@ onMounted(async () => {
 
     const getTopScoresTrace = trace('getTopScores')
     getTopScoresTrace.start()
-    scores.value = await Score.database.getTopScores()
+    const _topScores = await Score.database.getTopScores()
+    const topScoresSidList = _topScores.map((val) => val.sid)
     getTopScoresTrace.stop()
 
     if (highestScore) {
         const getGlobalPositionTrace = trace('getGlobalPosition')
         getGlobalPositionTrace.start()
         const pos = await Score.database.getGlobalPosition(highestScore)
-        highestScoreGlobalPosition.value = pos
         getGlobalPositionTrace.stop()
+
+        if (pos > 10) {
+            const getHigherScoresTrace = trace('getHigherScores')
+            getHigherScoresTrace.start()
+            const _higherScores = await Score.database.getClosestHigherScores(highestScore)
+            getHigherScoresTrace.stop()
+
+            higherScores.value = _higherScores.filter((val) => !topScoresSidList.includes(val.sid))
+        } else if (pos === 10) {
+            _topScores.pop();
+            _topScores.push(highestScore)
+        }
+        highestScoreGlobalPosition.value = pos
     }
+    topScores.value = _topScores
 })
 
 
@@ -62,7 +78,7 @@ watch(() => highestScoreGlobalPosition.value,
 
 <template>
     <div class="main styled-scrollbar">
-        <div v-for="({ name, score, sid, uid }, index) in scores" class="score-container"
+        <div v-for="({ name, score, sid, uid }, index) in topScores" class="score-container"
             :id="highestScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
             :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
             <div class="high-score-place">
@@ -76,11 +92,25 @@ watch(() => highestScoreGlobalPosition.value,
                 </div>
             </div>
         </div>
-        <div v-if="highestScoreGlobalPosition !== null && highestScoreGlobalPosition > MAX_DATABASE_RENDER_COUNT"
+        <div v-if="highestScoreGlobalPosition !== null && (highestScoreGlobalPosition - 1) > MAX_RENDER_COUNT"
             style="margin: 0px 0.25em; letter-spacing: 0.25em;font-size: 1.25em;font-weight: 700;">
             ...
         </div>
-        <div v-if="highestScoreGlobalPosition !== null && highestScoreGlobalPosition > MAX_DATABASE_RENDER_COUNT"
+        <div v-if="highestScoreGlobalPosition !== null" v-for="({ name, score, sid, uid }, index) in higherScores"
+            class="score-container" :id="highestScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
+            :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
+            <div class="high-score-place">
+                {{ highestScoreGlobalPosition - higherScores.length + index }}
+            </div>
+            <div class="high-score-info">
+                <div class="user-name"> {{ name }}</div>
+                <div class="user-score">
+                    <v-icon name="bi-trophy-fill" class="trophy-icon" />
+                    <div class="score-text"> {{ score }}</div>
+                </div>
+            </div>
+        </div>
+        <div v-if="highestScoreGlobalPosition !== null && highestScoreGlobalPosition > topScores.length"
             id="highestScoreGlobalPositionDiv" class="score-container uid-match" :key="generateId()">
             <div class="high-score-place">
                 {{ highestScoreGlobalPosition }}
