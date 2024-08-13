@@ -17,7 +17,7 @@ const RENDERER_HEIGHT = window.innerHeight;
 const CAMERA_FOV = 80;
 const CAMERA_ASPECT_RATIO = window.innerWidth / window.innerHeight;
 const CAMERA_NEAR = 0.1;
-const CAMERA_FAR = 1000;
+const CAMERA_FAR = 100;
 const PLAYER_RADIUS = 1;
 const PLAYER_HEIGHT = 0.75;
 const PILLAR_HEIGHT = 30;
@@ -25,6 +25,8 @@ const FOG_COLOR = 0xaa7777;
 const MINIMUM_PILLAR_COUNT = 7;
 const BASE_GAME_SPEED = 1.25;
 const MAX_GAME_SPEED = 2.25;
+
+const GAME_DELTA_TIME_LIST_COUNT = 50;
 
 export default class Game {
   renderer: WebGLRenderer;
@@ -42,6 +44,7 @@ export default class Game {
   onScoreChange?: (score: number) => any;
   onGameOver?: (score: number) => any;
   private isGameRunning = false;
+  private deltaTimeArray: number[] = [];
   constructor() {
     this.renderer = new WebGLRenderer({
       antialias: true,
@@ -89,9 +92,17 @@ export default class Game {
     this.renderer.setAnimationLoop((timestamp: number) => {
       if (
         game.lastGameLoopTimestamp === null ||
-        game.lastGameLoopTimestamp < timestamp + 60
+        game.lastGameLoopTimestamp + 10 < timestamp
       ) {
         const deltaTime = timestamp - (game.lastGameLoopTimestamp ?? timestamp);
+
+        if (game.deltaTimeArray.length < GAME_DELTA_TIME_LIST_COUNT) {
+          game.deltaTimeArray.push(deltaTime);
+        } else {
+          game.deltaTimeArray.shift();
+          game.deltaTimeArray.push(deltaTime);
+        }
+
         game.lastGameLoopTimestamp = timestamp;
         game.gameLoop(deltaTime);
       }
@@ -263,7 +274,18 @@ export default class Game {
       (pillar) => pillar.isSinking && pillar.isDestroyed === false
     );
 
-    for (let pillar of this.pillars) {
+    for (let i = 0; i < this.pillars.length; i++) {
+      const pillar = this.pillars[i];
+
+      // Try to optimize by not rendering the shadow of far away pillars
+      if (i > 3) {
+        pillar.mesh.receiveShadow = false;
+        pillar.mesh.castShadow = false;
+      } else {
+        pillar.mesh.receiveShadow = true;
+        pillar.mesh.castShadow = true;
+      }
+
       if (pillar.isPlayerOnTop()) {
         isPlayerOnPlatform = true;
         this.lastPillarPlayerWasOn = pillar;
@@ -337,6 +359,14 @@ export default class Game {
     for (let pillar of this.passedPillars) {
       pillar.gameSpeed = this.gameSpeed;
     }
+  }
+
+  getAverageDeltaTime() {
+    let sum = 0;
+    for (let deltaTime of this.deltaTimeArray) {
+      sum += deltaTime;
+    }
+    return sum / this.deltaTimeArray.length;
   }
 
   pause() {

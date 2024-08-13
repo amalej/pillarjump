@@ -2,6 +2,7 @@
     <div ref="gameComponent">
         <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
+        <DebugComponent v-if="showDebug" :ave-delay="averageDelay" />
         <GameActionButtons @click-trophy-button="handleClickTrophy" @click-git-hub-button="handleClickGitHub" />
     </div>
 </template>
@@ -14,18 +15,30 @@ import Game from '@/game';
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue';
 import { logEvent } from '@/firebase/analytics';
+import DebugComponent from '@/components/DebugComponent.vue';
 
 logEvent("render_game_page")
 const router = useRouter()
-const route = useRoute();
+const route = useRoute()
 const score = ref(0)
 const showGameOverPopup = ref(false)
-const gameComponent = ref<HTMLElement | null>(null);
-const game = new Game();
+const gameComponent = ref<HTMLElement | null>(null)
+const averageDelay = ref<number | undefined>(undefined)
+const showDebug = ref(false)
+const game = new Game()
+
+setInterval(() => {
+    averageDelay.value = game.getAverageDeltaTime();
+}, 500)
 
 watch(() => route.fullPath,
     async () => {
-        if (route.fullPath === "/") {
+        console.log(route.query["debug"])
+        if (route.query["debug"] === 'true') {
+            showDebug.value = true
+        }
+
+        if (route.path === "/") {
             game.resume()
         } else {
             game.pause()
