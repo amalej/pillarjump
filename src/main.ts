@@ -9,9 +9,10 @@ import {
   FaPlay,
   MdArrowbackRound,
   LaGlobeSolid,
+  BiGithub,
 } from "oh-vue-icons/icons";
 
-addIcons(BiTrophyFill, FaPlay, MdArrowbackRound, LaGlobeSolid);
+addIcons(BiTrophyFill, FaPlay, MdArrowbackRound, LaGlobeSolid, BiGithub);
 
 const app = createApp(App);
 app.component("v-icon", OhVueIcon);

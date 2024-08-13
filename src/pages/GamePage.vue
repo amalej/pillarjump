@@ -2,7 +2,7 @@
     <div ref="gameComponent">
         <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
-        <GameActionButtons @click-trophy-button="handleClickTrophy" />
+        <GameActionButtons @click-trophy-button="handleClickTrophy" @click-git-hub-button="handleClickGitHub" />
     </div>
 </template>
 
@@ -42,6 +42,11 @@ onMounted(() => {
 
 async function handleClickTrophy() {
     await router.push({ path: '/highscores' })
+    game.pause()
+}
+
+async function handleClickGitHub() {
+    await router.push({ path: '/github' })
     game.pause()
 }
 
