@@ -26,7 +26,7 @@ const MINIMUM_PILLAR_COUNT = 7;
 const BASE_GAME_SPEED = 1.25;
 const MAX_GAME_SPEED = 2.25;
 
-const GAME_DELTA_TIME_LIST_COUNT = 50;
+const GAME_DELTA_TIME_LIST_COUNT = 10;
 
 export default class Game {
   renderer: WebGLRenderer;
@@ -90,25 +90,18 @@ export default class Game {
     this.passedPillars = [];
 
     this.renderer.setAnimationLoop((timestamp: number) => {
-      if (
-        game.lastGameLoopTimestamp === null ||
-        game.lastGameLoopTimestamp + 10 < timestamp
-      ) {
-        const deltaTime = timestamp - (game.lastGameLoopTimestamp ?? timestamp);
-
-        if (game.deltaTimeArray.length < GAME_DELTA_TIME_LIST_COUNT) {
-          game.deltaTimeArray.push(deltaTime);
-        } else {
-          game.deltaTimeArray.shift();
-          game.deltaTimeArray.push(deltaTime);
-        }
-
-        game.lastGameLoopTimestamp = timestamp;
-        game.gameLoop(deltaTime);
+      const deltaTime = timestamp - (game.lastGameLoopTimestamp ?? timestamp);
+      if (game.deltaTimeArray.length < GAME_DELTA_TIME_LIST_COUNT) {
+        game.deltaTimeArray.push(deltaTime);
+      } else {
+        game.deltaTimeArray.shift();
+        game.deltaTimeArray.push(deltaTime);
       }
+
+      game.lastGameLoopTimestamp = timestamp;
+      game.gameLoop(deltaTime);
       game.renderer.render(game.scene, game.camera);
     });
-
     this.addControls();
   }
 

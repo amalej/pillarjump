@@ -1,7 +1,10 @@
 <template>
     <div class="main">
         <div>
-            ave delay: {{ aveDelay }}
+            ave delay: {{ aveDelay ? aveDelay.toFixed(2) : '' }}
+        </div>
+        <div>
+            fps: {{ aveDelay ? (1000 / aveDelay).toFixed(2) : '' }}
         </div>
     </div>
 </template>
@@ -25,5 +28,6 @@ defineProps<{
     z-index: 1;
     position: absolute;
     display: flex;
+    flex-direction: column;
 }
 </style>
