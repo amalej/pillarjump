@@ -11,7 +11,9 @@ import {
   query,
   setDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
+import User from "./user";
 
 export interface UserScore {
   uid: string;
@@ -20,7 +22,7 @@ export interface UserScore {
   sid: string;
 }
 
-const MAX_LOCAL_HIGHSCORE_COUNT = 5;
+const MAX_LOCAL_HIGHSCORE_COUNT = 15;
 export const MAX_GLOBAL_HIGHSCORE_COUNT = 3;
 export const MAX_DATABASE_TOP_SCORE_COUNT = 10;
 export const MAX_DATABASE_HIGHER_SCORE_COUNT = 5;
@@ -103,7 +105,45 @@ export default class Score {
 
       return scores;
     },
-    getGlobalPosition: async (userScore: UserScore): Promise<number> => {
+    syncTopLocalScores: async () => {
+      const highestScoreLocal: UserScore[] = Score.localStorage
+        .get()
+        .slice(0, MAX_GLOBAL_HIGHSCORE_COUNT);
+      const collectionRef = collection(firestoreDb, "scores");
+      const localScoreSid = highestScoreLocal.map((val) => val.sid);
+      const userScoreQuery = query(
+        collectionRef,
+        where("uid", "==", User.localStorage.getId())
+      );
+      const userScoreSnapshot = await getDocs(userScoreQuery);
+      const dbScores = userScoreSnapshot.docs.reduce(function (map: any, obj) {
+        const _docData = obj.data() as UserScore;
+        map[_docData.sid] = { ..._docData, docRef: obj.ref };
+        return map;
+      }, {});
+
+      const dbScoresReferences = { ...dbScores };
+      [...localScoreSid].forEach((e) => delete dbScoresReferences[e]);
+
+      const batch = writeBatch(firestoreDb);
+      let dbScoreRefCounter = 0;
+      for (let localScore of highestScoreLocal) {
+        if (dbScores[localScore.sid] === undefined) {
+          if (dbScoreRefCounter < Object.keys(dbScoresReferences).length) {
+            const key = Object.keys(dbScoresReferences)[dbScoreRefCounter];
+            const docRef = dbScores[key].docRef;
+            dbScoreRefCounter++;
+            batch.set(docRef, localScore);
+          } else {
+            const docRef = doc(collection(firestoreDb, "scores"));
+            batch.set(docRef, localScore);
+          }
+        }
+      }
+
+      await batch.commit();
+    },
+    getGlobalPosition: async (userScore: UserScore): Promise<number | null> => {
       const collectionRef = collection(firestoreDb, "scores");
       const countQuery = query(
         collectionRef,

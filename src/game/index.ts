@@ -284,7 +284,7 @@ export default class Game {
         this.lastPillarPlayerWasOn = pillar;
         pillar.shrink();
       }
-      if (
+      else if (
         this.player.mesh.position.z <
         pillar.mesh.position.z - pillar.currentRadius
       ) {

@@ -33,7 +33,6 @@ setInterval(() => {
 
 watch(() => route.fullPath,
     async () => {
-        console.log(route.query["debug"])
         if (route.query["debug"] === 'true') {
             showDebug.value = true
         }
