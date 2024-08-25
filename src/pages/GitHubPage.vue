@@ -10,13 +10,13 @@
                     GitHub Repository
                 </div>
                 <div class="link-contianer"
-                    :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump', 'open_github_report_bug')">
+                    :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump/issues/new?assignees=&labels=bug&projects=&template=bug-report.md&title=%5Bbug%5D+', 'open_github_report_bug')">
                     <v-icon name="bi-bug" class="icon" />
                     <div class="link-text"></div>
                     Report Bug
                 </div>
                 <div class="link-contianer"
-                    :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump', 'open_github_feature_request')">
+                    :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump/issues/new?assignees=&labels=enhancement&projects=&template=feature-request.md&title=%5BFR%5D+', 'open_github_feature_request')">
                     <v-icon name="hi-light-bulb" class="icon" />
                     <div class="link-text"></div>
                     Feature Request
