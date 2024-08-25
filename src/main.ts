@@ -12,6 +12,8 @@ import {
   BiGithub,
   GiClick,
   MdSpacebarRound,
+  BiBug,
+  HiLightBulb ,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -22,6 +24,8 @@ addIcons(
   BiGithub,
   GiClick,
   MdSpacebarRound,
+  BiBug,
+  HiLightBulb 
 );
 
 const app = createApp(App);

@@ -8,7 +8,7 @@ import { onMounted, ref, watch } from 'vue';
 import { VueSpinner } from 'vue3-spinners';
 
 
-logEvent("render_global_high_scores")
+logEvent("render_global_highscores")
 const props = defineProps<{
     userScore?: UserScore
 }>()

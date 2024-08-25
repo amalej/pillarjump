@@ -3,9 +3,9 @@
         <div class="action-button" :onclick="() => emit('clickTrophyButton')">
             <v-icon name="bi-trophy-fill" class="icon" />
         </div>
-        <!-- <div class="action-button" :onclick="() => emit('clickGitHubButton')">
+        <div class="action-button" :onclick="() => emit('clickGitHubButton')">
             <v-icon name="bi-github" class="icon" />
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -30,7 +30,7 @@ const emit = defineEmits([
 }
 
 .action-button {
-    margin: 0.1em 0.25em;
+    margin: 0.15em 0.25em;
     border: 2px solid white;
     border-radius: 0.5em;
     padding: 0.5em;

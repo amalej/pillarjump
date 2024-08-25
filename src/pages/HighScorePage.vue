@@ -31,7 +31,7 @@ import { ref } from 'vue';
 
 const scoreTab = ref<'personal' | 'global'>('personal')
 
-logEvent("render_high_score_page")
+logEvent("render_highscore_page")
 const router = useRouter()
 </script>
 
