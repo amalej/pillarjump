@@ -143,7 +143,7 @@ export default class Player {
           const fallRotationAngle = Math.atan2(dZ, -dX);
           const maxRotationZ = -(Math.PI / 2) * Math.cos(fallRotationAngle);
           const maxRotationX = -(Math.PI / 2) * Math.sin(fallRotationAngle);
-          const FALL_ROTATION_SPEEED = 0.065;
+          const FALL_ROTATION_SPEEED = 0.055;
           this.mesh.rotation.z += maxRotationZ * FALL_ROTATION_SPEEED;
           if (Math.abs(this.mesh.rotation.z) > Math.abs(maxRotationZ)) {
             this.mesh.rotation.z = maxRotationZ;
