@@ -17,7 +17,7 @@ const RENDERER_HEIGHT = window.innerHeight;
 const CAMERA_FOV = 80;
 const CAMERA_ASPECT_RATIO = window.innerWidth / window.innerHeight;
 const CAMERA_NEAR = 0.1;
-const CAMERA_FAR = 1000;
+const CAMERA_FAR = 100;
 const PLAYER_RADIUS = 1;
 const PLAYER_HEIGHT = 0.75;
 const PILLAR_HEIGHT = 30;
@@ -25,6 +25,10 @@ const FOG_COLOR = 0xaa7777;
 const MINIMUM_PILLAR_COUNT = 7;
 const BASE_GAME_SPEED = 1.25;
 const MAX_GAME_SPEED = 2.25;
+
+const GAME_DELTA_TIME_LIST_COUNT = 10;
+
+type GameState = "idle" | "in-game" | "game-over";
 
 export default class Game {
   renderer: WebGLRenderer;
@@ -41,7 +45,10 @@ export default class Game {
   private playerNotOnPlatformCheckBufferCounter: number = 0;
   onScoreChange?: (score: number) => any;
   onGameOver?: (score: number) => any;
+  onGameStateChange?: (state: string) => any;
+  gameState: GameState = "idle";
   private isGameRunning = false;
+  private deltaTimeArray: number[] = [];
   constructor() {
     this.renderer = new WebGLRenderer({
       antialias: true,
@@ -87,17 +94,18 @@ export default class Game {
     this.passedPillars = [];
 
     this.renderer.setAnimationLoop((timestamp: number) => {
-      if (
-        game.lastGameLoopTimestamp === null ||
-        game.lastGameLoopTimestamp < timestamp + 60
-      ) {
-        const deltaTime = timestamp - (game.lastGameLoopTimestamp ?? timestamp);
-        game.lastGameLoopTimestamp = timestamp;
-        game.gameLoop(deltaTime);
+      const deltaTime = timestamp - (game.lastGameLoopTimestamp ?? timestamp);
+      if (game.deltaTimeArray.length < GAME_DELTA_TIME_LIST_COUNT) {
+        game.deltaTimeArray.push(deltaTime);
+      } else {
+        game.deltaTimeArray.shift();
+        game.deltaTimeArray.push(deltaTime);
       }
+
+      game.lastGameLoopTimestamp = timestamp;
+      game.gameLoop(deltaTime);
       game.renderer.render(game.scene, game.camera);
     });
-
     this.addControls();
   }
 
@@ -105,10 +113,11 @@ export default class Game {
     const game = this;
     window.onkeydown = function (event) {
       if (event.key === " ") {
-        if (game.isGameRunning) {
+        if (game.gameState !== "game-over") {
           game.lastPillarPlayerWasOn = null;
           game.playerHasMoved = true;
           game.player.switchCircle();
+          game.gameState = "in-game";
         }
       }
     };
@@ -116,10 +125,11 @@ export default class Game {
     this.renderer.domElement.addEventListener(
       "touchstart",
       function (event) {
-        if (game.isGameRunning) {
+        if (game.gameState !== "game-over") {
           game.lastPillarPlayerWasOn = null;
           game.playerHasMoved = true;
           game.player.switchCircle();
+          game.gameState = "in-game";
         }
       },
       { passive: true }
@@ -251,59 +261,73 @@ export default class Game {
     let isPlayerOnPlatform = false;
     const normalizedDeltaTime = deltaTime / 16;
 
-    while (this.pillars.length < MINIMUM_PILLAR_COUNT) {
-      this.generatePillar();
-    }
-
-    const _pillars = [...this.pillars];
-    this.pillars = [..._pillars].filter(
-      (pillar) => pillar.isDestroyed == false
-    );
-    this.passedPillars = [...this.passedPillars, ..._pillars].filter(
-      (pillar) => pillar.isSinking && pillar.isDestroyed === false
-    );
-
-    for (let pillar of this.pillars) {
-      if (pillar.isPlayerOnTop()) {
-        isPlayerOnPlatform = true;
-        this.lastPillarPlayerWasOn = pillar;
-        pillar.shrink();
+    if (this.gameState !== "game-over") {
+      while (this.pillars.length < MINIMUM_PILLAR_COUNT) {
+        this.generatePillar();
       }
+
+      const _pillars = [...this.pillars];
+      this.pillars = [..._pillars].filter(
+        (pillar) => pillar.isDestroyed == false
+      );
+      this.passedPillars = [...this.passedPillars, ..._pillars].filter(
+        (pillar) => pillar.isSinking && pillar.isDestroyed === false
+      );
+
+      for (let i = 0; i < this.pillars.length; i++) {
+        const pillar = this.pillars[i];
+
+        // Try to optimize by not rendering the shadow of far away pillars
+        if (i > 3) {
+          pillar.mesh.receiveShadow = false;
+          pillar.mesh.castShadow = false;
+        } else {
+          pillar.mesh.receiveShadow = true;
+          pillar.mesh.castShadow = true;
+        }
+
+        if (pillar.isPlayerOnTop()) {
+          isPlayerOnPlatform = true;
+          this.lastPillarPlayerWasOn = pillar;
+          pillar.shrink();
+        } else if (
+          this.player.mesh.position.z <
+          pillar.mesh.position.z - pillar.currentRadius
+        ) {
+          pillar.sink();
+          this.passedPillars.push(pillar);
+          this.pillars.shift();
+        }
+        pillar.update(normalizedDeltaTime);
+      }
+
+      for (let pillar of this.passedPillars) {
+        pillar.update(normalizedDeltaTime);
+      }
+
+      if (!isPlayerOnPlatform) {
+        this.playerNotOnPlatformCheckBufferCounter += 1;
+      } else {
+        this.playerNotOnPlatformCheckBufferCounter = 0;
+      }
+
       if (
-        this.player.mesh.position.z <
-        pillar.mesh.position.z - pillar.currentRadius
+        this.playerNotOnPlatformCheckBufferCounter >=
+          this.playerNotOnPlatformCheckBufferMax &&
+        this.playerHasMoved
       ) {
-        pillar.sink();
-        this.passedPillars.push(pillar);
-        this.pillars.shift();
+        this.player.fall(this.lastPillarPlayerWasOn);
+        this.handleGameOver();
       }
-      pillar.update(normalizedDeltaTime);
-    }
 
-    for (let pillar of this.passedPillars) {
-      pillar.update(normalizedDeltaTime);
-    }
-
-    if (!isPlayerOnPlatform) {
-      this.playerNotOnPlatformCheckBufferCounter += 1;
-    } else {
-      this.playerNotOnPlatformCheckBufferCounter = 0;
-    }
-
-    if (
-      this.playerNotOnPlatformCheckBufferCounter >=
-        this.playerNotOnPlatformCheckBufferMax &&
-      this.playerHasMoved
-    ) {
-      this.player.fall(this.lastPillarPlayerWasOn);
-      this.handleGameOver();
+      this.handlePanShift(normalizedDeltaTime);
     }
 
     this.player.update(normalizedDeltaTime);
-    this.handlePanShift(normalizedDeltaTime);
   }
 
   start() {
+    this.gameState = "idle";
     for (let pillar of this.pillars) {
       pillar.remove();
     }
@@ -319,7 +343,8 @@ export default class Game {
   }
 
   private handleGameOver() {
-    this.isGameRunning = false;
+    this.gameState = "game-over";
+    // this.isGameRunning = false;
     if (this.onGameOver !== undefined) this.onGameOver(this.player.score);
   }
 
@@ -337,6 +362,14 @@ export default class Game {
     for (let pillar of this.passedPillars) {
       pillar.gameSpeed = this.gameSpeed;
     }
+  }
+
+  getAverageDeltaTime() {
+    let sum = 0;
+    for (let deltaTime of this.deltaTimeArray) {
+      sum += deltaTime;
+    }
+    return sum / this.deltaTimeArray.length;
   }
 
   pause() {

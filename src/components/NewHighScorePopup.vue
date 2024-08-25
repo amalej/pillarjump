@@ -67,7 +67,7 @@ function submit() {
                         </div>
                     </div>
                     <div class="form__group field">
-                        <input type="input" class="form__field" placeholder="Name" @input="validateNameInput"
+                        <input type="input" class="form__field" placeholder="Name" maxlength="12" @input="validateNameInput"
                             v-model="userName">
                         <label for="name" class="form__label">Name</label>
                     </div>

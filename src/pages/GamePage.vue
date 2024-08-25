@@ -1,8 +1,10 @@
 <template>
     <div ref="gameComponent">
+        <Instructions v-if="game.gameState === 'idle'" />
         <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
-        <GameActionButtons @click-trophy-button="handleClickTrophy" />
+        <DebugComponent v-if="showDebug" :ave-delay="averageDelay" />
+        <GameActionButtons @click-trophy-button="handleClickTrophy" @click-git-hub-button="handleClickGitHub" />
     </div>
 </template>
 
@@ -14,18 +16,30 @@ import Game from '@/game';
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue';
 import { logEvent } from '@/firebase/analytics';
+import DebugComponent from '@/components/DebugComponent.vue';
+import Instructions from '@/components/Instructions.vue';
 
 logEvent("render_game_page")
 const router = useRouter()
-const route = useRoute();
+const route = useRoute()
 const score = ref(0)
 const showGameOverPopup = ref(false)
-const gameComponent = ref<HTMLElement | null>(null);
-const game = new Game();
+const gameComponent = ref<HTMLElement | null>(null)
+const averageDelay = ref<number | undefined>(undefined)
+const showDebug = ref(false)
+const game = new Game()
+
+setInterval(() => {
+    averageDelay.value = game.getAverageDeltaTime();
+}, 500)
 
 watch(() => route.fullPath,
     async () => {
-        if (route.fullPath === "/") {
+        if (route.query["debug"] === 'true') {
+            showDebug.value = true
+        }
+
+        if (route.path === "/") {
             game.resume()
         } else {
             game.pause()
@@ -45,6 +59,11 @@ async function handleClickTrophy() {
     game.pause()
 }
 
+async function handleClickGitHub() {
+    await router.push({ path: '/github' })
+    game.pause()
+}
+
 function handleClickPlay() {
     logEvent("play_game")
     showGameOverPopup.value = false;
@@ -61,7 +80,6 @@ game.onGameOver = async (_score) => {
     })
     showGameOverPopup.value = true;
 }
-
 game.start()
 </script>
 

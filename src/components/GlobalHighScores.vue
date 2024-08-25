@@ -5,15 +5,19 @@ import { logEvent } from '@/firebase/analytics';
 import { generateId } from '@/utils';
 import { trace } from '@/firebase/performance';
 import { onMounted, ref, watch } from 'vue';
+import { VueSpinner } from 'vue3-spinners';
 
-logEvent("render_global_high_scores")
+
+logEvent("render_global_highscores")
 const props = defineProps<{
     userScore?: UserScore
 }>()
 
 const topScores = ref<UserScore[]>([])
+const hasFinishedLoading = ref<boolean>(false)
 const higherScores = ref<UserScore[]>([])
-const highestScore: UserScore | undefined = Score.localStorage.get()[0]
+const highestScoreLocal: UserScore[] = Score.localStorage.get().slice(0, 3)
+const topLocalScore = highestScoreLocal[0]
 const highestScoreGlobalPosition = ref<number | null>(null)
 const MAX_RENDER_COUNT = MAX_DATABASE_TOP_SCORE_COUNT + MAX_DATABASE_HIGHER_SCORE_COUNT
 
@@ -29,32 +33,40 @@ onMounted(async () => {
         }, 100)
     }
 
+    await Score.database.syncTopLocalScores();
+
+    /**
+     * There are three await calls here, we might want to use Promise.all()
+     */
+
     const getTopScoresTrace = trace('getTopScores')
     getTopScoresTrace.start()
     const _topScores = await Score.database.getTopScores()
     const topScoresSidList = _topScores.map((val) => val.sid)
     getTopScoresTrace.stop()
 
-    if (highestScore) {
+    if (topLocalScore) {
         const getGlobalPositionTrace = trace('getGlobalPosition')
         getGlobalPositionTrace.start()
-        const pos = await Score.database.getGlobalPosition(highestScore)
+        const pos = await Score.database.getGlobalPosition(topLocalScore)
         getGlobalPositionTrace.stop()
 
-        if (pos > 10) {
-            const getHigherScoresTrace = trace('getHigherScores')
-            getHigherScoresTrace.start()
-            const _higherScores = await Score.database.getClosestHigherScores(highestScore)
-            getHigherScoresTrace.stop()
-
-            higherScores.value = _higherScores.filter((val) => !topScoresSidList.includes(val.sid))
-        } else if (pos === 10) {
-            _topScores.pop();
-            _topScores.push(highestScore)
+        if (pos !== null) {
+            if (pos > MAX_DATABASE_TOP_SCORE_COUNT) {
+                const getHigherScoresTrace = trace('getHigherScores')
+                getHigherScoresTrace.start()
+                const _higherScores = await Score.database.getClosestHigherScores(topLocalScore)
+                getHigherScoresTrace.stop()
+                higherScores.value = _higherScores.filter((val) => !topScoresSidList.includes(val.sid))
+            } else if (pos === MAX_DATABASE_TOP_SCORE_COUNT) {
+                _topScores.pop();
+                _topScores.push(topLocalScore)
+            }
         }
         highestScoreGlobalPosition.value = pos
     }
     topScores.value = _topScores
+    hasFinishedLoading.value = true
 })
 
 
@@ -78,51 +90,57 @@ watch(() => highestScoreGlobalPosition.value,
 
 <template>
     <div class="main styled-scrollbar">
-        <div v-for="({ name, score, sid, uid }, index) in topScores" class="score-container"
-            :id="highestScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
-            :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
-            <div class="high-score-place">
-                {{ index + 1 }}
+        <div class="spinner-container" v-if="!hasFinishedLoading">
+            <VueSpinner class="spinner" />
+        </div>
+        <div v-else>
+            <div v-for="({ name, score, sid, uid }, index) in topScores" class="score-container"
+                :id="topLocalScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
+                :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
+                <div class="high-score-place">
+                    {{ index + 1 }}
+                </div>
+                <div class="high-score-info">
+                    <div class="user-name"> {{ name }}</div>
+                    <div class="user-score">
+                        <v-icon name="bi-trophy-fill" class="trophy-icon" />
+                        <div class="score-text"> {{ score }}</div>
+                    </div>
+                </div>
             </div>
-            <div class="high-score-info">
-                <div class="user-name"> {{ name }}</div>
-                <div class="user-score">
-                    <v-icon name="bi-trophy-fill" class="trophy-icon" />
-                    <div class="score-text"> {{ score }}</div>
+            <div v-if="highestScoreGlobalPosition !== null && (highestScoreGlobalPosition - 1) > MAX_RENDER_COUNT"
+                style="margin: 0px 0.25em; letter-spacing: 0.25em;font-size: 1.25em;font-weight: 700;">
+                ...
+            </div>
+            <div v-if="highestScoreGlobalPosition !== null" v-for="({ name, score, sid, uid }, index) in higherScores"
+                class="score-container" :id="topLocalScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
+                :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
+                <div class="high-score-place">
+                    {{ highestScoreGlobalPosition - higherScores.length + index }}
+                </div>
+                <div class="high-score-info">
+                    <div class="user-name"> {{ name }}</div>
+                    <div class="user-score">
+                        <v-icon name="bi-trophy-fill" class="trophy-icon" />
+                        <div class="score-text"> {{ score }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="highestScoreGlobalPosition !== null && highestScoreGlobalPosition > topScores.length"
+                id="highestScoreGlobalPositionDiv" class="score-container uid-match" :key="generateId()">
+                <div class="high-score-place">
+                    {{ highestScoreGlobalPosition }}
+                </div>
+                <div class="high-score-info">
+                    <div class="user-name"> {{ topLocalScore?.name }}</div>
+                    <div class="user-score">
+                        <v-icon name="bi-trophy-fill" class="trophy-icon" />
+                        <div class="score-text"> {{ topLocalScore?.score }}</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div v-if="highestScoreGlobalPosition !== null && (highestScoreGlobalPosition - 1) > MAX_RENDER_COUNT"
-            style="margin: 0px 0.25em; letter-spacing: 0.25em;font-size: 1.25em;font-weight: 700;">
-            ...
-        </div>
-        <div v-if="highestScoreGlobalPosition !== null" v-for="({ name, score, sid, uid }, index) in higherScores"
-            class="score-container" :id="highestScore?.sid === sid ? 'highestScoreGlobalPositionDiv' : undefined"
-            :class="{ 'uid-match': User.localStorage.getId() === uid }" :key="generateId()">
-            <div class="high-score-place">
-                {{ highestScoreGlobalPosition - higherScores.length + index }}
-            </div>
-            <div class="high-score-info">
-                <div class="user-name"> {{ name }}</div>
-                <div class="user-score">
-                    <v-icon name="bi-trophy-fill" class="trophy-icon" />
-                    <div class="score-text"> {{ score }}</div>
-                </div>
-            </div>
-        </div>
-        <div v-if="highestScoreGlobalPosition !== null && highestScoreGlobalPosition > topScores.length"
-            id="highestScoreGlobalPositionDiv" class="score-container uid-match" :key="generateId()">
-            <div class="high-score-place">
-                {{ highestScoreGlobalPosition }}
-            </div>
-            <div class="high-score-info">
-                <div class="user-name"> {{ highestScore?.name }}</div>
-                <div class="user-score">
-                    <v-icon name="bi-trophy-fill" class="trophy-icon" />
-                    <div class="score-text"> {{ highestScore?.score }}</div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </template>
 
@@ -172,6 +190,15 @@ watch(() => highestScoreGlobalPosition.value,
 .uid-match {
     border: 3.5px solid var(--game-pink-color-light);
     padding: calc(0.5em - 2.5px);
+}
+
+.spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25em;
+    font-size: 4em;
+    color: var(--game-pink-color-light);
 }
 </style>
 

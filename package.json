@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others \"firebase emulators:start --only firestore\" \"vite --host\"",
+    "dev:import": "concurrently --kill-others \"firebase emulators:start --only firestore --import ./emulator-data\" \"vite --host\"",
     "dev:app": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
@@ -15,8 +16,9 @@
     "firebase": "^10.12.5",
     "oh-vue-icons": "^1.0.0-rc3",
     "three": "^0.167.1",
-    "vue": "^3.4.29",
-    "vue-router": "^4.4.2"
+    "vue": "^3.4.38",
+    "vue-router": "^4.4.2",
+    "vue3-spinners": "^1.2.2"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

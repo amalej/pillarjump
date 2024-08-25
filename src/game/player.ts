@@ -18,6 +18,7 @@ interface PlayerConstructor {
 
 export default class Player {
   ROTATION_SPEED = 0.04;
+  FALL_SPEED = 0.3;
   gameSpeed: number;
   scene: Scene;
   radius: number;
@@ -102,6 +103,8 @@ export default class Player {
     this.mesh.position.z = this.originalPosition.z;
     this.mesh.position.y = this.originalPosition.y + this.height / 2;
     this.pillar = null;
+    this.mesh.rotation.z = 0;
+    this.mesh.rotation.x = 0;
   }
 
   switchCircle() {
@@ -130,21 +133,46 @@ export default class Player {
         this.mesh.position.z +
         Math.sin(this.rotationAngle) * this.circleDistance;
     } else {
-      this.revolvingCircle.mesh.position.x =
-        this.mesh.position.x +
-        Math.cos(this.rotationAngle) * this.circleDistance;
-      this.revolvingCircle.mesh.position.z =
-        this.mesh.position.z +
-        Math.sin(this.rotationAngle) * this.circleDistance;
+      // Player fall animation.
       if (this.pillar !== null) {
-        this.mesh.rotation.z = Math.PI / 2;
-        this.mesh.rotation.y = 0.4;
+        // If player is on a pillar, tilt the player to make it look like they fell.
+        if (this.pillar.currentRadius > 0) {
+          // Calculation to tilt the player.
+          const dZ = this.pillar.mesh.position.z - this.mesh.position.z;
+          const dX = this.pillar.mesh.position.x - this.mesh.position.x;
+          const fallRotationAngle = Math.atan2(dZ, -dX);
+          const maxRotationZ = -(Math.PI / 2) * Math.cos(fallRotationAngle);
+          const maxRotationX = -(Math.PI / 2) * Math.sin(fallRotationAngle);
+          const FALL_ROTATION_SPEEED = 0.065;
+          this.mesh.rotation.z += maxRotationZ * FALL_ROTATION_SPEEED;
+          if (Math.abs(this.mesh.rotation.z) > Math.abs(maxRotationZ)) {
+            this.mesh.rotation.z = maxRotationZ;
+          }
+          this.mesh.rotation.x += maxRotationX * FALL_ROTATION_SPEEED;
+          if (Math.abs(this.mesh.rotation.x) > Math.abs(maxRotationX)) {
+            this.mesh.rotation.x = maxRotationX;
+          }
+
+          if (
+            Math.abs(this.mesh.rotation.z) >= Math.abs(maxRotationZ) &&
+            Math.abs(this.mesh.rotation.x) >= Math.abs(maxRotationX)
+          ) {
+            if (this.mesh.position.y > 0)
+              this.mesh.position.y -= this.FALL_SPEED;
+          }
+        } else {
+          // Just make the player fall if the pillar no longer has radius.
+          if (this.mesh.position.y > 0) this.mesh.position.y -= this.FALL_SPEED;
+        }
+      } else {
+        // Just make the player fall if there is no pillar.
+        if (this.mesh.position.y > 0) this.mesh.position.y -= this.FALL_SPEED;
       }
     }
   }
 
   fall(pillar: PillarPlatform | null) {
-    // this.isFalling = true;
+    this.isFalling = true;
     this.pillar = pillar;
     if (pillar !== null) {
       pillar.isShrinking = false;

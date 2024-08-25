@@ -4,7 +4,7 @@ import { logEvent } from '@/firebase/analytics';
 import { generateId } from '@/utils';
 import { onMounted, ref } from 'vue';
 
-logEvent("render_personal_high_scores")
+logEvent("render_personal_highscores")
 const props = defineProps<{
     userScore?: UserScore
 }>()
