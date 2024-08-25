@@ -2,8 +2,10 @@
 import Score, { type UserScore } from '@/database/score';
 import NewHighScorePopup from './NewHighScorePopup.vue';
 import PersonalHighScores from './PersonalHighScores.vue';
+import GlobalHighScores from '@/components/GlobalHighScores.vue';
 import { ref } from 'vue';
 
+const scoreTab = ref<'personal' | 'global'>('personal')
 const props = defineProps<{
     score: number;
 }>()
@@ -34,7 +36,14 @@ function playAgain() {
         <div class="card">
             <div class="card-header">Game Over</div>
             <div class="card-body">
-                <PersonalHighScores :user-score="userScore" />
+                <div class="score-tab-selector">
+                    <div class="score-tab" :onclick="() => scoreTab = 'global'"
+                        :class="{ 'active-score-tab': scoreTab === 'global' }">Global</div>
+                    <div class="score-tab" :onclick="() => scoreTab = 'personal'"
+                        :class="{ 'active-score-tab': scoreTab === 'personal' }">Personal</div>
+                </div>
+                <PersonalHighScores v-if="scoreTab === 'personal'" :user-score="userScore" />
+                <GlobalHighScores v-else-if="scoreTab === 'global'" />
             </div>
             <div class="card-footer">
                 <div class="card-button" :onclick="playAgain">
@@ -127,5 +136,30 @@ function playAgain() {
     align-items: center;
     text-transform: uppercase;
     font-weight: 600;
+}
+
+.score-tab-selector {
+    margin: 0.5em;
+    display: flex;
+    flex-direction: row;
+    width: calc(100% - 1em);
+}
+
+.score-tab {
+    color: white;
+    text-transform: uppercase;
+    width: auto;
+    width: 100%;
+    margin: 0px 0.1em;
+    display: flex;
+    padding: 0.5em;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid white;
+}
+
+.active-score-tab {
+    border: 3.5px solid var(--game-pink-color-light);
+    padding: calc(0.5em - 2.5px);
 }
 </style>

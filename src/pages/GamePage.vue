@@ -1,5 +1,6 @@
 <template>
     <div ref="gameComponent">
+        <Instructions v-if="game.gameState === 'idle'" />
         <GameOverPopup v-if="showGameOverPopup" @click-play="handleClickPlay" :score="score" />
         <GameScore :score="score" />
         <DebugComponent v-if="showDebug" :ave-delay="averageDelay" />
@@ -16,6 +17,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue';
 import { logEvent } from '@/firebase/analytics';
 import DebugComponent from '@/components/DebugComponent.vue';
+import Instructions from '@/components/Instructions.vue';
 
 logEvent("render_game_page")
 const router = useRouter()
@@ -78,7 +80,6 @@ game.onGameOver = async (_score) => {
     })
     showGameOverPopup.value = true;
 }
-
 game.start()
 </script>
 
