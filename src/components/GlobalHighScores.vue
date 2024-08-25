@@ -63,7 +63,6 @@ onMounted(async () => {
                 _topScores.push(topLocalScore)
             }
         }
-        console.log(pos)
         highestScoreGlobalPosition.value = pos
     }
     topScores.value = _topScores

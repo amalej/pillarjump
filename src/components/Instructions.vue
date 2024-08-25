@@ -4,13 +4,13 @@
             <div class="movement" v-if="isMobileDevice()">
                 <v-icon name="gi-click" class="click-icon" />
                 <div class="text-instructions">
-                    Click to move to a pillar
+                    Click to jump to a pillar
                 </div>
             </div>
             <div class="movement" v-else>
                 <v-icon name="md-spacebar-round" class="click-icon" />
                 <div class="text-instructions">
-                    Press spacebar to move to a pillar
+                    Press spacebar to jump to a pillar
                 </div>
             </div>
         </div>

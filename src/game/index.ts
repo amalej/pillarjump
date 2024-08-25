@@ -260,65 +260,66 @@ export default class Game {
     this.handleGameSpeed();
     let isPlayerOnPlatform = false;
     const normalizedDeltaTime = deltaTime / 16;
-    while (this.pillars.length < MINIMUM_PILLAR_COUNT) {
-      this.generatePillar();
-    }
-
-    const _pillars = [...this.pillars];
-    this.pillars = [..._pillars].filter(
-      (pillar) => pillar.isDestroyed == false
-    );
-    this.passedPillars = [...this.passedPillars, ..._pillars].filter(
-      (pillar) => pillar.isSinking && pillar.isDestroyed === false
-    );
-
-    for (let i = 0; i < this.pillars.length; i++) {
-      const pillar = this.pillars[i];
-
-      // Try to optimize by not rendering the shadow of far away pillars
-      if (i > 3) {
-        pillar.mesh.receiveShadow = false;
-        pillar.mesh.castShadow = false;
-      } else {
-        pillar.mesh.receiveShadow = true;
-        pillar.mesh.castShadow = true;
-      }
-
-      if (pillar.isPlayerOnTop()) {
-        isPlayerOnPlatform = true;
-        this.lastPillarPlayerWasOn = pillar;
-        pillar.shrink();
-      } else if (
-        this.player.mesh.position.z <
-        pillar.mesh.position.z - pillar.currentRadius
-      ) {
-        pillar.sink();
-        this.passedPillars.push(pillar);
-        this.pillars.shift();
-      }
-      pillar.update(normalizedDeltaTime);
-    }
-
-    for (let pillar of this.passedPillars) {
-      pillar.update(normalizedDeltaTime);
-    }
-
-    if (!isPlayerOnPlatform) {
-      this.playerNotOnPlatformCheckBufferCounter += 1;
-    } else {
-      this.playerNotOnPlatformCheckBufferCounter = 0;
-    }
-
-    if (
-      this.playerNotOnPlatformCheckBufferCounter >=
-        this.playerNotOnPlatformCheckBufferMax &&
-      this.playerHasMoved
-    ) {
-      this.player.fall(this.lastPillarPlayerWasOn);
-      this.handleGameOver();
-    }
 
     if (this.gameState !== "game-over") {
+      while (this.pillars.length < MINIMUM_PILLAR_COUNT) {
+        this.generatePillar();
+      }
+
+      const _pillars = [...this.pillars];
+      this.pillars = [..._pillars].filter(
+        (pillar) => pillar.isDestroyed == false
+      );
+      this.passedPillars = [...this.passedPillars, ..._pillars].filter(
+        (pillar) => pillar.isSinking && pillar.isDestroyed === false
+      );
+
+      for (let i = 0; i < this.pillars.length; i++) {
+        const pillar = this.pillars[i];
+
+        // Try to optimize by not rendering the shadow of far away pillars
+        if (i > 3) {
+          pillar.mesh.receiveShadow = false;
+          pillar.mesh.castShadow = false;
+        } else {
+          pillar.mesh.receiveShadow = true;
+          pillar.mesh.castShadow = true;
+        }
+
+        if (pillar.isPlayerOnTop()) {
+          isPlayerOnPlatform = true;
+          this.lastPillarPlayerWasOn = pillar;
+          pillar.shrink();
+        } else if (
+          this.player.mesh.position.z <
+          pillar.mesh.position.z - pillar.currentRadius
+        ) {
+          pillar.sink();
+          this.passedPillars.push(pillar);
+          this.pillars.shift();
+        }
+        pillar.update(normalizedDeltaTime);
+      }
+
+      for (let pillar of this.passedPillars) {
+        pillar.update(normalizedDeltaTime);
+      }
+
+      if (!isPlayerOnPlatform) {
+        this.playerNotOnPlatformCheckBufferCounter += 1;
+      } else {
+        this.playerNotOnPlatformCheckBufferCounter = 0;
+      }
+
+      if (
+        this.playerNotOnPlatformCheckBufferCounter >=
+          this.playerNotOnPlatformCheckBufferMax &&
+        this.playerHasMoved
+      ) {
+        this.player.fall(this.lastPillarPlayerWasOn);
+        this.handleGameOver();
+      }
+
       this.handlePanShift(normalizedDeltaTime);
     }
 
