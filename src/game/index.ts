@@ -28,6 +28,8 @@ const MAX_GAME_SPEED = 2.25;
 
 const GAME_DELTA_TIME_LIST_COUNT = 10;
 
+type GameState = "idle" | "in-game" | "game-over";
+
 export default class Game {
   renderer: WebGLRenderer;
   scene: Scene;
@@ -43,6 +45,8 @@ export default class Game {
   private playerNotOnPlatformCheckBufferCounter: number = 0;
   onScoreChange?: (score: number) => any;
   onGameOver?: (score: number) => any;
+  onGameStateChange?: (state: string) => any;
+  gameState: GameState = "idle";
   private isGameRunning = false;
   private deltaTimeArray: number[] = [];
   constructor() {
@@ -109,10 +113,11 @@ export default class Game {
     const game = this;
     window.onkeydown = function (event) {
       if (event.key === " ") {
-        if (game.isGameRunning) {
+        if (game.gameState !== "game-over") {
           game.lastPillarPlayerWasOn = null;
           game.playerHasMoved = true;
           game.player.switchCircle();
+          game.gameState = "in-game";
         }
       }
     };
@@ -120,10 +125,11 @@ export default class Game {
     this.renderer.domElement.addEventListener(
       "touchstart",
       function (event) {
-        if (game.isGameRunning) {
+        if (game.gameState !== "game-over") {
           game.lastPillarPlayerWasOn = null;
           game.playerHasMoved = true;
           game.player.switchCircle();
+          game.gameState = "in-game";
         }
       },
       { passive: true }
@@ -254,7 +260,6 @@ export default class Game {
     this.handleGameSpeed();
     let isPlayerOnPlatform = false;
     const normalizedDeltaTime = deltaTime / 16;
-
     while (this.pillars.length < MINIMUM_PILLAR_COUNT) {
       this.generatePillar();
     }
@@ -283,8 +288,7 @@ export default class Game {
         isPlayerOnPlatform = true;
         this.lastPillarPlayerWasOn = pillar;
         pillar.shrink();
-      }
-      else if (
+      } else if (
         this.player.mesh.position.z <
         pillar.mesh.position.z - pillar.currentRadius
       ) {
@@ -314,11 +318,15 @@ export default class Game {
       this.handleGameOver();
     }
 
+    if (this.gameState !== "game-over") {
+      this.handlePanShift(normalizedDeltaTime);
+    }
+
     this.player.update(normalizedDeltaTime);
-    this.handlePanShift(normalizedDeltaTime);
   }
 
   start() {
+    this.gameState = "idle";
     for (let pillar of this.pillars) {
       pillar.remove();
     }
@@ -334,7 +342,8 @@ export default class Game {
   }
 
   private handleGameOver() {
-    this.isGameRunning = false;
+    this.gameState = "game-over";
+    // this.isGameRunning = false;
     if (this.onGameOver !== undefined) this.onGameOver(this.player.score);
   }
 
