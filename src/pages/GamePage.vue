@@ -78,7 +78,9 @@ game.onGameOver = async (_score) => {
     logEvent("game_over", {
         score: _score
     })
-    showGameOverPopup.value = true;
+    setTimeout(() => {
+        showGameOverPopup.value = true;
+    }, 750)
 }
 game.start()
 </script>
