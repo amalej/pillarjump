@@ -22,5 +22,3 @@ jobs:
         run: npm install -g firebase-tools@13.16.0
       - name: Deploy
         run: firebase deploy
-
-ENVIRONMENT_VARIABLES
