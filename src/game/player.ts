@@ -1,5 +1,6 @@
 import {
   CylinderGeometry,
+  Group,
   Mesh,
   MeshStandardMaterial,
   type Scene,
@@ -33,6 +34,12 @@ export default class Player {
   revolvingCircle: PlayerRevolvingCircle;
   isFalling: boolean;
   pillar: PillarPlatform | null = null;
+  deathPivotGroup: Group;
+  positionOnDeath: {
+    x: number;
+    y: number;
+    z: number;
+  } | null = null;
 
   constructor({
     scene,
@@ -87,6 +94,9 @@ export default class Player {
       radius: this.radius,
     });
     this.mesh.castShadow = true;
+
+    this.deathPivotGroup = new Group();
+    this.deathPivotGroup.add(this.mesh);
   }
 
   increaseScore() {
@@ -105,6 +115,9 @@ export default class Player {
     this.pillar = null;
     this.mesh.rotation.z = 0;
     this.mesh.rotation.x = 0;
+    this.positionOnDeath = null;
+    this.deathPivotGroup.position.set(0, 0, 0);
+    this.deathPivotGroup.rotation.set(0, 0, 0);
   }
 
   switchCircle() {
@@ -138,27 +151,35 @@ export default class Player {
         // If player is on a pillar, tilt the player to make it look like they fell.
         if (this.pillar.currentRadius > 0) {
           // Calculation to tilt the player.
-          const dZ = this.pillar.mesh.position.z - this.mesh.position.z;
-          const dX = this.pillar.mesh.position.x - this.mesh.position.x;
-          const fallRotationAngle = Math.atan2(dZ, -dX);
-          const maxRotationZ = -(Math.PI / 2) * Math.cos(fallRotationAngle);
-          const maxRotationX = -(Math.PI / 2) * Math.sin(fallRotationAngle);
-          const FALL_ROTATION_SPEEED = 0.07;
-          this.mesh.rotation.z += maxRotationZ * FALL_ROTATION_SPEEED;
-          if (Math.abs(this.mesh.rotation.z) > Math.abs(maxRotationZ)) {
-            this.mesh.rotation.z = maxRotationZ;
+          if (!this.positionOnDeath) {
+            // this.mesh.rotateOnAxis(axis, 1);
+            this.positionOnDeath = {
+              x: this.mesh.position.x,
+              y: this.mesh.position.y,
+              z: this.mesh.position.z,
+            };
+
+            this.mesh.position.set(0, this.height / 2, 0);
+            this.deathPivotGroup.position.set(
+              this.positionOnDeath.x,
+              this.positionOnDeath.y - this.height / 2,
+              this.positionOnDeath.z
+            );
           }
-          this.mesh.rotation.x += maxRotationX * FALL_ROTATION_SPEEED;
-          if (Math.abs(this.mesh.rotation.x) > Math.abs(maxRotationX)) {
-            this.mesh.rotation.x = maxRotationX;
-          }
+          const maxRotationZ = -(Math.PI / 2);
 
           if (
-            Math.abs(this.mesh.rotation.z) >= Math.abs(maxRotationZ) &&
-            Math.abs(this.mesh.rotation.x) >= Math.abs(maxRotationX)
+            Math.abs(this.deathPivotGroup.rotation.z) >= Math.abs(maxRotationZ)
           ) {
-            if (this.mesh.position.y > 0)
-              this.mesh.position.y -= this.FALL_SPEED;
+            this.deathPivotGroup.rotation.z = maxRotationZ;
+            this.deathPivotGroup.position.y -= this.FALL_SPEED;
+          } else {
+            this.deathPivotGroup.rotation.z += maxRotationZ * 0.045;
+            const dZ = this.pillar.mesh.position.z - this.positionOnDeath.z;
+            const dX = this.pillar.mesh.position.x - this.positionOnDeath.x;
+            const fallRotationAngle = Math.atan2(dZ, -dX);
+
+            this.deathPivotGroup.rotation.y = fallRotationAngle;
           }
         } else {
           // Just make the player fall if the pillar no longer has radius.
@@ -181,7 +202,8 @@ export default class Player {
 
   addToScene() {
     this.scene.add(this.revolvingCircle.mesh);
-    this.scene.add(this.mesh);
+    this.scene.add(this.deathPivotGroup);
+    // this.scene.add(this.mesh);
   }
 }
 
