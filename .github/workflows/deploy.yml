@@ -16,7 +16,7 @@ jobs:
         run: npm install
       - name: Create .env file
         run: |
-          echo "${{ secrets.VITE_FIREBASE_API_KEY }}" >> .env
+          echo "${{ secrets.VITE_FIREBASE_API_KEY }}" > .env
           echo "${{ secrets.VITE_FIREBASE_APP_ID }}" >> .env
           echo "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> .env
           echo "${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}" >> .env
