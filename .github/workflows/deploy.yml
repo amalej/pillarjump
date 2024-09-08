@@ -21,7 +21,7 @@ jobs:
           # echo "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" >> .env
           # echo "${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}" >> .env
           # echo "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
-          echo "${{ secrets.VITE_FIREBASE_PROJECT_ID }}" >> .env
+          echo "${{ secrets.VITE_FIREBASE_PROJECT_ID }}" > .env
           # echo "${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" >> .env
       - name: Build application
         run: npm run build
