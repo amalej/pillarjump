@@ -16,7 +16,7 @@ jobs:
         run: npm install
       - name: Build application
         run: |
-          echo ${{ secrets.ENVIRONMENT_VARIABLES }} >> .env
+          echo ${{ secrets.ENVIRONMENT_VARIABLES }} > .env
           npm run build
       - name: Install `firebase-tools` module globally
         run: npm install -g firebase-tools@13.16.0
