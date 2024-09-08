@@ -78,8 +78,7 @@ export default class PillarPlatform {
     const xDist = this.mesh.position.x - this.player.mesh.position.x;
     const zDist = this.mesh.position.z - this.player.mesh.position.z;
     const dist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(zDist, 2));
-    // if (dist < this.currentRadius) {
-    if (dist - this.player.height / 2 <= this.currentRadius) {
+    if (dist - this.player.height * 0.05 < this.currentRadius) {
       return true;
     }
     return false;
