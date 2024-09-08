@@ -12,6 +12,8 @@ jobs:
       - uses: "google-github-actions/auth@v2"
         with:
           credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+      - name: Create .env file
+        run: echo ${{ secrets.ENVIRONMENT_VARIABLES }} >> .env
       - name: Install modules
         run: npm install
       - name: Build application
@@ -20,3 +22,5 @@ jobs:
         run: npm install -g firebase-tools@13.16.0
       - name: Deploy
         run: firebase deploy
+
+ENVIRONMENT_VARIABLES
