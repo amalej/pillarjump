@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Deploy to Firebase Hosting
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+      - name: Install modules
+        run: npm install
+      - name: Build application
+        run: npm run build
+      - name: Install `firebase-tools` module globally
+        run: npm install -g firebase-tools@13.16.0
+      - name: Deploy
+        run: firebase deploy
