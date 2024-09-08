@@ -174,7 +174,7 @@ export default class Player {
             this.deathPivotGroup.rotation.z = maxRotationZ;
             this.deathPivotGroup.position.y -= this.FALL_SPEED;
           } else {
-            this.deathPivotGroup.rotation.z += maxRotationZ * 0.045;
+            this.deathPivotGroup.rotation.z += maxRotationZ * 0.05;
             const dZ = this.pillar.mesh.position.z - this.positionOnDeath.z;
             const dX = this.pillar.mesh.position.x - this.positionOnDeath.x;
             const fallRotationAngle = Math.atan2(dZ, -dX);
