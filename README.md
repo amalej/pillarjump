@@ -4,11 +4,12 @@ Play the game: https://pillarjump.web.app/
 
 <img src="./images/game-screenshot-00.png" alt="drawing" height="512"/>
 
-## Made with Firebase + Vue 3
+## Made with Firebase + Vue 3 + Three.js
 
 <span style="text-align: center;">
     <img src="./images/firebase-logo.png" alt="drawing" width="128"/>
     <img src="./images/vue-icon.png" alt="drawing" width="128"/>
+    <img src="./images/three-js-logo.png" alt="drawing" width="128"/>
 </span>
 <br>
 
