@@ -14,10 +14,11 @@ jobs:
           credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
       - name: Install modules
         run: npm install
-      - name: Build application
+      - name: Create .env file
         run: |
-          echo ${{ secrets.ENVIRONMENT_VARIABLES }} > .env
-          npm run build
+          echo "VITE_FIREBASE_PROJECT_ID=pillarjump" >> .env
+      - name: Build application
+        run: npm run build
       - name: Install `firebase-tools` module globally
         run: npm install -g firebase-tools@13.16.0
       - name: Deploy
