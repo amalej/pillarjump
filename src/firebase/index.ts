@@ -18,6 +18,12 @@ export const firebaseAnalytics = getAnalytics(app);
 export const firebasePerformance = getPerformance(app);
 export const firestoreDb = getFirestore(app);
 
-// connectFirestoreEmulator(firestoreDb, "127.0.0.1", 8080);
-// firebasePerformance.dataCollectionEnabled = false;
-// firebasePerformance.instrumentationEnabled = false;
+if (
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+) {
+  console.log("Connecting to Firebase Emulator");
+  connectFirestoreEmulator(firestoreDb, "127.0.0.1", 8080);
+  firebasePerformance.dataCollectionEnabled = false;
+  firebasePerformance.instrumentationEnabled = false;
+}
