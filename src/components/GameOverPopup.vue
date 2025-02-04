@@ -57,7 +57,11 @@ function playAgain() {
 
 <style scoped>
 #main {
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
     top: 0px;
     left: 0px;
     height: 100%;
@@ -84,14 +88,18 @@ function playAgain() {
 }
 
 .card-header {
-    color: white;
+    color: green;
     display: flex;
     width: 100%;
-    letter-spacing: 0.05em;
-    font-size: 1.75em;
+    /* letter-spacing: 0.05em; */
+    /* font-size: 1.75em; */
     font-weight: 500;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+    font-size: 2.5em;
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-family: ArcadeClassic;
     justify-content: center;
     align-items: center;
 }
@@ -108,7 +116,11 @@ function playAgain() {
 .card-footer {
     display: flex;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+    font-size: 1.25em;
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-family: ArcadeClassic;
     justify-content: center;
 }
 

@@ -181,7 +181,7 @@ watch(() => highestScoreGlobalPosition.value,
 }
 
 .user-score {
-    font-size: 0.9em;
+    font-size: 1em;
     display: flex;
     flex-direction: row;
     align-items: center;

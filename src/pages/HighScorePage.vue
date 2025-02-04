@@ -37,7 +37,13 @@ const router = useRouter()
 
 <style scoped>
 #main {
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+
     display: flex;
     position: absolute;
     top: 0px;
@@ -68,11 +74,16 @@ const router = useRouter()
     color: white;
     display: flex;
     width: 100%;
-    letter-spacing: 0.05em;
+    /* letter-spacing: 0.05em; */
     font-size: 1.75em;
     font-weight: 500;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-family: ArcadeClassic;
+
     justify-content: center;
     align-items: center;
 }
@@ -89,7 +100,13 @@ const router = useRouter()
 .card-footer {
     display: flex;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+
     justify-content: center;
 }
 

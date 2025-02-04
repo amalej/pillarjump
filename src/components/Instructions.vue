@@ -32,7 +32,11 @@ const isMobileDevice = () => {
     position: absolute;
     bottom: 0px;
     color: white;
+    /* 
     font-family: Arial, Helvetica, sans-serif;
+    */
+    word-spacing: 0.2em;
+    font-family: ArcadeClassic;
 }
 
 .instructions {

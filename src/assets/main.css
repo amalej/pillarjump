@@ -16,3 +16,8 @@ body {
   height: 100%;
   background-color: black;
 }
+
+@font-face {
+  font-family: ArcadeClassic;
+  src: url(arcadeclassic.ttf);
+}
