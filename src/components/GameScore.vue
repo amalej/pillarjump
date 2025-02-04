@@ -38,10 +38,16 @@ watch(() => props.score, () => {
 #main {
     top: 0.3em;
     left: 0.3em;
-    letter-spacing: 0.08em;
+    /* letter-spacing: 0.08em; */
     color: white;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+    
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.25em;
+    font-family: ArcadeClassic;
+
     z-index: 1;
     position: absolute;
     display: flex;

@@ -83,7 +83,13 @@ function submit() {
 </template>
 <style scoped>
 #main {
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
+    
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+
     top: 0px;
     left: 0px;
     height: 100%;
@@ -112,11 +118,15 @@ function submit() {
     color: white;
     display: flex;
     width: 100%;
-    letter-spacing: 0.05em;
+    /* letter-spacing: 0.05em; */
     font-size: 1.75em;
     font-weight: 500;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+
+    letter-spacing: 0.1em;
+    font-family: ArcadeClassic;
+
     justify-content: center;
     align-items: center;
 }
@@ -135,6 +145,12 @@ function submit() {
     display: flex;
     text-align: left;
     font-family: Arial;
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+
     justify-content: center;
 }
 
@@ -197,11 +213,15 @@ function submit() {
     border: none;
     border-bottom: 0.2em solid #9b9b9b;
     outline: 0;
-    font-size: 1.2em;
+    font-size: 1.25em;
     color: #fff;
     padding: 0.5em 0;
     background: transparent;
     transition: border-color 0.2s;
+
+    
+    word-spacing: 0.2em;
+    font-family: ArcadeClassic;
 }
 
 .form__field::placeholder {

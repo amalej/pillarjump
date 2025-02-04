@@ -7,7 +7,7 @@
                     :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump', 'open_github_repository')">
                     <v-icon name="bi-github" class="icon" />
                     <div class="link-text"></div>
-                    GitHub Repository
+                    Repository
                 </div>
                 <div class="link-contianer"
                     :onclick="() => handleLinkClick('https://github.com/amalej/pillarjump/issues/new?assignees=&labels=bug&projects=&template=bug-report.md&title=%5Bbug%5D+', 'open_github_report_bug')">
@@ -69,7 +69,13 @@ function handleLinkClick(link: string, event?: string) {
 
 
 #main {
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+
     display: flex;
     position: absolute;
     top: 0px;
@@ -100,11 +106,16 @@ function handleLinkClick(link: string, event?: string) {
     color: white;
     display: flex;
     width: 100%;
-    letter-spacing: 0.05em;
+    /* letter-spacing: 0.05em; */
     font-size: 1.75em;
     font-weight: 500;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-family: ArcadeClassic;
+
     justify-content: center;
     align-items: center;
 }
@@ -121,7 +132,13 @@ function handleLinkClick(link: string, event?: string) {
 .card-footer {
     display: flex;
     text-align: left;
-    font-family: Arial;
+    /* font-family: Arial; */
+    
+    word-spacing: 0.2em;
+    letter-spacing: 0.1em;
+    font-size: 1.15em;
+    font-family: ArcadeClassic;
+    
     justify-content: center;
 }
 
