@@ -88,7 +88,7 @@ function playAgain() {
 }
 
 .card-header {
-    color: green;
+    color: white;
     display: flex;
     width: 100%;
     /* letter-spacing: 0.05em; */
