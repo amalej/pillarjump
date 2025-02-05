@@ -41,7 +41,7 @@ export default class Game {
   gameSpeed: number = 1;
   private lastGameLoopTimestamp: number | null = null;
   playerHasMoved: boolean = false;
-  private playerNotOnPlatformCheckBufferMax: number = 3;
+  private playerNotOnPlatformCheckBufferMax: number = 5;
   private playerNotOnPlatformCheckBufferCounter: number = 0;
   onScoreChange?: (score: number) => any;
   onGameOver?: (score: number) => any;
