@@ -11,6 +11,7 @@ import {
 import Player from "./player";
 import PillarPlatform from "./pillarPlatform";
 import Lights from "./lights";
+import ThreeJSHelpers from "./threeJsHelpers";
 
 const RENDERER_WITDH = window.innerWidth;
 const RENDERER_HEIGHT = window.innerHeight;
@@ -19,7 +20,7 @@ const CAMERA_ASPECT_RATIO = window.innerWidth / window.innerHeight;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 100;
 const PLAYER_RADIUS = 1;
-const PLAYER_HEIGHT = 0.8;
+const PLAYER_HEIGHT = 0.75;
 const PILLAR_HEIGHT = 30;
 const FOG_COLOR = 0xaa7777;
 const MINIMUM_PILLAR_COUNT = 7;
@@ -287,7 +288,9 @@ export default class Game {
         }
 
         if (pillar.isPlayerOnTop()) {
-          isPlayerOnPlatform = true;
+          if (pillar.isPlayerCenterOnTop()) {
+            isPlayerOnPlatform = true;
+          }
           this.lastPillarPlayerWasOn = pillar;
           pillar.shrink();
         } else if (
