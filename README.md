@@ -1,6 +1,6 @@
-# PillarJump
+# Pillar Jump
 
-Play the game: https://pillarjump.web.app/
+A game where you jump from pillar to pillar. Play the game: https://pillarjump.web.app/
 
 <img src="./images/game-screenshot-00.png" alt="drawing" height="512"/>
 
