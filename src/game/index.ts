@@ -20,7 +20,7 @@ const CAMERA_ASPECT_RATIO = window.innerWidth / window.innerHeight;
 const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 100;
 const PLAYER_RADIUS = 1;
-const PLAYER_HEIGHT = 0.75;
+const PLAYER_HEIGHT = 0.8;
 const PILLAR_HEIGHT = 30;
 const FOG_COLOR = 0xaa7777;
 const MINIMUM_PILLAR_COUNT = 7;
@@ -275,6 +275,8 @@ export default class Game {
         (pillar) => pillar.isSinking && pillar.isDestroyed === false
       );
 
+      let closestPillar: PillarPlatform | null = null;
+      let closestPillarDist: number | null = null;
       for (let i = 0; i < this.pillars.length; i++) {
         const pillar = this.pillars[i];
 
@@ -290,8 +292,16 @@ export default class Game {
         if (pillar.isPlayerOnTop()) {
           if (pillar.isPlayerCenterOnTop()) {
             isPlayerOnPlatform = true;
+            closestPillar = pillar;
+            closestPillarDist = pillar.playerDistanceFromEdge();
+          } else if (
+            closestPillarDist === null ||
+            pillar.playerDistanceFromEdge() < closestPillarDist
+          ) {
+            closestPillar = pillar;
+            closestPillarDist = pillar.playerDistanceFromEdge();
           }
-          this.lastPillarPlayerWasOn = pillar;
+          this.lastPillarPlayerWasOn = closestPillar;
           pillar.shrink();
         } else if (
           this.player.mesh.position.z <

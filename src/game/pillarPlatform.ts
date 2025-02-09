@@ -96,6 +96,13 @@ export default class PillarPlatform {
     return false;
   }
 
+  playerDistanceFromEdge() {
+    const xDist = this.mesh.position.x - this.player.mesh.position.x;
+    const zDist = this.mesh.position.z - this.player.mesh.position.z;
+    const dist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(zDist, 2));
+    return dist - this.radius;
+  }
+
   update(deltaTime: number) {
     if (this.isDestroyed) {
       return;

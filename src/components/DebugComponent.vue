@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <div>
-            ave delay: {{ aveDelay ? aveDelay.toFixed(2) : '' }}
+            ave render delay(ms): {{ aveDelay ? aveDelay.toFixed(2) : '' }}
         </div>
         <div>
             fps: {{ aveDelay ? (1000 / aveDelay).toFixed(2) : '' }}
