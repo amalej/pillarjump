@@ -294,6 +294,7 @@ export default class Game {
             isPlayerOnPlatform = true;
             closestPillar = pillar;
             closestPillarDist = pillar.playerDistanceFromEdge();
+            pillar.shrink();
           } else if (
             closestPillarDist === null ||
             pillar.playerDistanceFromEdge() < closestPillarDist
@@ -302,7 +303,6 @@ export default class Game {
             closestPillarDist = pillar.playerDistanceFromEdge();
           }
           this.lastPillarPlayerWasOn = closestPillar;
-          pillar.shrink();
         } else if (
           this.player.mesh.position.z <
           pillar.mesh.position.z - pillar.currentRadius
